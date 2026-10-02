@@ -8,6 +8,7 @@
 - Free AI coding workspace hardening checklist: https://ossabellator.github.io/claude-code-mcp-hardening/checklist.html
 - How to audit a Claude Code / MCP repository without executing it: https://ossabellator.github.io/claude-code-mcp-hardening/claude-code-repo-audit.html
 - A$39 public GitHub repository hardening audit: https://ossabellator.github.io/claude-code-mcp-hardening/repo-audit.html
+- A$79 one-time 60-day public-repository hardening watch: https://ossabellator.github.io/claude-code-mcp-hardening/watch.html
 - A$149 hands-on audit + hardening checkout: https://buy.stripe.com/9B600d9Mocei2RV8c104801
 - Source and read-only local audit utility: https://github.com/OssaBellator/claude-code-mcp-hardening
 - Sample delivered public-repository audit: https://github.com/OssaBellator/claude-code-mcp-hardening/issues/1
