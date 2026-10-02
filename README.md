@@ -15,6 +15,23 @@ Start with the [AI coding workspace hardening checklist](./CHECKLIST.md). It cov
 - recovery and rollback
 - verification and handoff
 
+## Run the free read-only inventory
+
+The repository also includes a zero-dependency Node.js inventory tool. It enumerates file and directory names only; it does **not** read file contents, execute project commands, or use the network.
+
+```bash
+git clone https://github.com/OssaBellator/claude-code-mcp-hardening.git
+node claude-code-mcp-hardening/audit.mjs /path/to/your/repo
+```
+
+For machine-readable output:
+
+```bash
+node claude-code-mcp-hardening/audit.mjs /path/to/your/repo --json
+```
+
+It flags review prompts such as multiple MCP config surfaces, instruction sprawl, automation sprawl, and secret-like filenames. These are inventory signals, not vulnerability verdicts.
+
 ## Fixed-scope implementation help — A$149 one-time
 
 If you want the audit and highest-impact fixes applied to one existing workspace, there is a fixed-price service:
