@@ -74,3 +74,13 @@ For a lower-friction read-only review, the **Public GitHub AI Agent & MCP Harden
 
 - [View the A$39 audit](https://ossabellator.github.io/claude-code-mcp-hardening/repo-audit.html)
 - [See a sample delivered audit](https://github.com/OssaBellator/claude-code-mcp-hardening/issues/1)
+
+
+## A$79 60-day public repository watch
+
+For repositories that are changing quickly, the **AI Agent Public Repository 60-Day Hardening Watch** delivers three read-only reports for one public GitHub repository: baseline, day 30, and day 60. It is **A$79 AUD one-time**, not a recurring subscription.
+
+The watch does not clone or execute the target repository, install dependencies, or require private access. Follow-up reports are appended to the baseline delivery thread.
+
+- [View the A$79 60-day watch](https://ossabellator.github.io/claude-code-mcp-hardening/watch.html)
+- [See the sample report format](https://github.com/OssaBellator/claude-code-mcp-hardening/issues/1)
