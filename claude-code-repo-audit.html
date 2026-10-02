@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to Audit a Claude Code / MCP Repository Without Executing It</title>
+<meta name="description" content="A practical method for auditing Claude Code, Codex and MCP repository configuration without running untrusted repository code. Inventory instructions, MCP config, workflows, secrets signals, recovery and verification.">
+<link rel="canonical" href="https://ossabellator.github.io/claude-code-mcp-hardening/claude-code-repo-audit.html">
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#171717;background:#f5f4ef;line-height:1.62}*{box-sizing:border-box}body{margin:0}.wrap{max-width:850px;margin:auto;padding:48px 22px 84px}article{background:#fff;border:1px solid #ddd9ce;border-radius:20px;padding:38px}h1{font-size:clamp(2.2rem,6vw,4rem);line-height:1;letter-spacing:-.035em;margin:.2em 0}.eyebrow{font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:.8rem;color:#666}h2{margin-top:38px}h3{margin-top:26px}code{background:#f2efe7;padding:.1em .35em;border-radius:5px}.callout{background:#171717;color:#fff;border-radius:16px;padding:24px;margin-top:34px}.callout a{color:#fff}.home{color:#555}.fine{font-size:.92rem;color:#666}li{margin:.55em 0}
+</style>
+</head><body><main class="wrap">
+<a class="home" href="./">← AI coding hardening home</a>
+<article>
+<div class="eyebrow">Repository audit methodology</div>
+<h1>How to audit a Claude Code / MCP repository without executing it</h1>
+<p>AI coding tools turn repository configuration into part of the effective control plane. A repo may contain agent instructions, MCP server definitions, hooks, GitHub Actions, browser/deployment integrations, local settings and recovery conventions. Before running any of it, you can learn a surprising amount from public or otherwise read-only evidence.</p>
+
+<p>The core rule is simple: <strong>separate inspection from execution</strong>. An audit should not need to install the target repository’s dependencies, run its scripts, start its MCP servers, or grant it secrets just to understand how authority is wired.</p>
+
+<h2>1. Inventory the instruction surfaces</h2>
+<p>Start by locating the files that tell coding agents how to behave. Common examples include <code>AGENTS.md</code>, <code>CLAUDE.md</code>, GitHub Copilot instruction files, tool-specific command directories, and repository-local agent definitions.</p>
+<p>The risk is not merely that an instruction file exists. The harder operational problem is <em>instruction sprawl</em>: several files can each appear authoritative while containing different build commands, permission expectations, or prohibited actions. Record every instruction surface and identify which one is canonical versus tool-specific.</p>
+
+<h2>2. Map MCP and agent settings without starting them</h2>
+<p>Look for repository-scoped MCP and agent configuration such as <code>.mcp.json</code>, <code>mcp.json</code>, <code>.cursor/mcp.json</code>, <code>.vscode/mcp.json</code>, Claude settings, and comparable tool files.</p>
+<p>At this stage, do not launch a server named by the configuration. The useful questions are structural:</p>
+<ul>
+<li>How many configuration surfaces exist?</li>
+<li>Are the same servers declared in multiple places?</li>
+<li>Are remote-write tools mixed into an otherwise read-only workflow?</li>
+<li>Does configuration rely on hard-coded local paths or ambient credentials?</li>
+<li>Can a reviewer tell which file actually wins when settings conflict?</li>
+</ul>
+
+<h2>3. Treat automation as authority, not just CI</h2>
+<p>GitHub Actions, hooks and scheduled jobs can hold more authority than an editor plugin. Inventory workflow files and inspect triggers, permissions and referenced actions. Review <code>pull_request_target</code> workflows carefully because they run in the base-repository context. Look for workflows that request broad write permissions when narrower scopes would work.</p>
+<p>For referenced GitHub Actions, a full commit SHA is the strongest immutable reference. Tags and branches can be convenient, but they are movable references; use that fact as a hardening consideration rather than automatically calling every tag a vulnerability.</p>
+
+<h2>4. Look for credential-risk signals without printing credentials</h2>
+<p>A safe auditor should distinguish between <strong>evidence that deserves review</strong> and a verified secret exposure. A tracked <code>.npmrc</code>, for example, may contain harmless registry configuration. A tracked private-key file or a high-confidence live-token pattern is more urgent.</p>
+<p>The output should report the affected path and the type of signal, not reproduce the secret value. If a live credential is confirmed in public history, rotation comes before cleanup.</p>
+
+<h2>5. Find the verification contract</h2>
+<p>Agents need a deterministic answer to “how do I know this change is good?” Look for explicit test, lint, typecheck, build or check commands. In a monorepo, those may be named <code>test:unit</code>, <code>lint:ci</code> or similar rather than only <code>test</code>.</p>
+<p>If the verification command is ambiguous, an autonomous agent may choose the cheapest-looking command rather than the correct one. The audit should therefore treat legible verification as an operational control, not merely developer convenience.</p>
+
+<h2>6. Audit recovery before retry logic</h2>
+<p>Automation failures become expensive when nobody knows whether a half-finished action is safe to replay. A repository hardening review should ask:</p>
+<ul>
+<li>Can a code change be restored to a known-good commit?</li>
+<li>Are external writes idempotent, or can retrying duplicate them?</li>
+<li>Is there durable evidence distinguishing “never ran,” “failed,” and “completed”?</li>
+<li>Are scheduled jobs bounded by a stop condition?</li>
+<li>Are production credentials separate from ordinary development credentials?</li>
+</ul>
+<p>Recovery is particularly important for AI agents because a model can reason correctly about a task while still receiving an ambiguous transport or process result.</p>
+
+<h2>7. Preserve the evidence boundary in the report</h2>
+<p>A useful audit states what it actually inspected. For example:</p>
+<ul>
+<li>repository tree entries inspected;</li>
+<li>selected public configuration files read;</li>
+<li>whether repository code was executed;</li>
+<li>whether private repository access occurred;</li>
+<li>known blind spots such as organization policy, runtime infrastructure or secret stores.</li>
+</ul>
+<p>This prevents a filename-level or configuration-level review from being misrepresented as a penetration test or security certification.</p>
+
+<h2>Run the free read-only inventory</h2>
+<p>The companion GitHub repository contains a zero-dependency Node.js utility that inventories common AI coding configuration surfaces locally without reading file contents or using the network:</p>
+<p><code>node audit.mjs /path/to/repo --json</code></p>
+<p><a href="https://github.com/OssaBellator/claude-code-mcp-hardening">View the open-source audit utility</a> or use the <a href="./checklist.html">free hardening checklist</a>.</p>
+
+<div class="callout">
+<h2 style="margin-top:0">Want a read-only audit of one public repository?</h2>
+<p>The A$39 public-repo audit uses a bounded GitHub API inspection path, does not clone or execute the target repository, and delivers an evidence-backed report.</p>
+<p><a href="./repo-audit.html">See the A$39 public repository audit →</a></p>
+<p><a href="https://github.com/OssaBellator/claude-code-mcp-hardening/issues/1">See a sample delivered report →</a></p>
+</div>
+
+<p class="fine">Repository configuration evidence can identify hardening opportunities, but it cannot prove the absence of vulnerabilities. Private infrastructure, runtime behavior, organization policy and secret stores may not be visible from repository evidence.</p>
+</article></main></body></html>
