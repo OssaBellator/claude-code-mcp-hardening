@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free GitHub Action for Claude Code, Codex & MCP Repository Inventory</title>
+<meta name="description" content="Run a zero-dependency read-only GitHub Action that inventories Claude Code, Codex, Cursor, MCP and repository automation surfaces without executing repository code.">
+<link rel="canonical" href="https://ossabellator.github.io/claude-code-mcp-hardening/github-action.html">
+<style>:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#171717;background:#f5f4ef;line-height:1.6}*{box-sizing:border-box}body{margin:0}.wrap{max-width:850px;margin:auto;padding:48px 22px 84px}article{background:#fff;border:1px solid #ddd9ce;border-radius:20px;padding:38px}h1{font-size:clamp(2.2rem,6vw,4rem);line-height:1;letter-spacing:-.035em}.eyebrow{font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:.8rem;color:#666}pre{overflow:auto;background:#171717;color:#fff;border-radius:14px;padding:18px}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.home{color:#555}.cta{background:#f2efe7;border-radius:14px;padding:20px;margin-top:28px}.fine{font-size:.92rem;color:#666}</style>
+</head><body><main class="wrap"><a class="home" href="./">← AI coding hardening home</a><article>
+<div class="eyebrow">Free · zero dependencies · read-only</div>
+<h1>Run an AI coding repository inventory in GitHub Actions.</h1>
+<p>The public <strong>AI Agent Repository Hardening Audit</strong> Action inventories common Claude Code, Codex, Cursor, MCP, agent-instruction and automation surfaces and writes the result to the job summary.</p>
+<p>The audit logic does not execute target repository code, install dependencies, or make network requests. It enumerates file and directory names only; the purpose is to expose configuration sprawl and review gaps before broader agent permissions are granted.</p>
+
+<h2>Copy-paste workflow</h2>
+<pre><code>name: AI agent repository audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: OssaBellator/claude-code-mcp-hardening@v1
+</code></pre>
+
+<h2>What it inventories</h2>
+<ul>
+<li><code>AGENTS.md</code>, <code>CLAUDE.md</code>, Copilot instructions and common agent command directories;</li>
+<li>common repository-scoped MCP configuration paths;</li>
+<li>Claude/Cursor/VS Code agent settings paths;</li>
+<li>GitHub Actions, Claude hooks and common local automation configuration;</li>
+<li>secret-like filenames without reading or printing their contents.</li>
+</ul>
+
+<h2>What it deliberately does not do</h2>
+<ul>
+<li>run your build, tests, scripts or MCP servers;</li>
+<li>install dependencies;</li>
+<li>read repository file contents;</li>
+<li>claim a vulnerability exists based on a filename;</li>
+<li>replace a full security review.</li>
+</ul>
+
+<div class="cta">
+<strong>Need deeper public-repository evidence?</strong>
+<p>The A$39 public-repo audit adds bounded public GitHub configuration/content inspection and a delivered report. The A$79 watch repeats that review at baseline, day 30 and day 60.</p>
+<p><a href="./repo-audit.html">A$39 one-off audit</a> · <a href="./watch.html">A$79 60-day watch</a></p>
+</div>
+
+<p class="fine">Versioned Action release: <a href="https://github.com/OssaBellator/claude-code-mcp-hardening/releases/tag/v1.0.0">v1.0.0</a>.</p>
+</article></main></body></html>
