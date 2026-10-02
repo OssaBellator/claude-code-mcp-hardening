@@ -55,7 +55,7 @@ What is included:
 - verify the important paths that can be tested
 - leave a concise handoff with what changed and what remains manual
 
-[Book the fixed-scope audit + hardening](https://buy.stripe.com/9B600d9Mocei2RV8c104801)
+[Book the fixed-scope audit + hardening](https://buy.stripe.com/9B600d9Mocei2RV8c104801?client_reference_id=github_readme_implementation)
 
 This is not a promise of perfect security, autonomous profits, or unlimited support. Larger integrations or rebuilds are scoped separately before additional work begins.
 
