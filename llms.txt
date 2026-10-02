@@ -1,0 +1,17 @@
+# Claude Code & MCP Workspace Hardening
+
+> Public resources and fixed-scope services for reviewing AI-assisted coding repositories, Claude Code, Codex, Cursor, MCP servers, agent instructions, automation, permissions, recovery and verification.
+
+## Primary pages
+
+- Home: https://ossabellator.github.io/claude-code-mcp-hardening/
+- Free AI coding workspace hardening checklist: https://ossabellator.github.io/claude-code-mcp-hardening/checklist.html
+- How to audit a Claude Code / MCP repository without executing it: https://ossabellator.github.io/claude-code-mcp-hardening/claude-code-repo-audit.html
+- A$39 public GitHub repository hardening audit: https://ossabellator.github.io/claude-code-mcp-hardening/repo-audit.html
+- A$149 hands-on audit + hardening checkout: https://buy.stripe.com/9B600d9Mocei2RV8c104801
+- Source and read-only local audit utility: https://github.com/OssaBellator/claude-code-mcp-hardening
+- Sample delivered public-repository audit: https://github.com/OssaBellator/claude-code-mcp-hardening/issues/1
+
+## Scope
+
+The public-repository audit is read-only and does not clone or execute target repository code. It reports bounded public evidence and explicit limitations; it is not a penetration test, security certification, legal opinion or compliance assessment.
