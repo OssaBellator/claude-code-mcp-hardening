@@ -62,6 +62,10 @@ details{margin-top:12px}.spinner{display:inline-block;width:1em;height:1em;borde
 <h2 id="title">Audit result</h2>
 <div id="metrics" class="grid"></div>
 <div id="findings"></div>
+<div class="actions">
+<button id="share" class="secondary" type="button">Copy shareable audit link</button>
+<a class="btn secondary" id="sourceRepo" href="#" target="_blank" rel="noopener">Open audited repository</a>
+</div>
 <details>
 <summary><strong>Evidence inventory and limitations</strong></summary>
 <div id="inventory" style="margin-top:12px"></div>
@@ -139,6 +143,7 @@ function addFinding(list,priority,title,detail,evidence=[]){
 }
 function render(data){
   $('title').textContent='Audit result — '+data.repo;
+  $('sourceRepo').href='https://github.com/'+data.repo;
   const metrics=$('metrics'); metrics.innerHTML='';
   [
     ['Files inspected',data.treeCount],
@@ -262,6 +267,24 @@ async function runAudit(){
 }
 runButton.addEventListener('click',runAudit);
 repoInput.addEventListener('keydown',e=>{if(e.key==='Enter')runAudit()});
+$('share').addEventListener('click',async()=>{
+  const value=repoInput.value.trim();
+  let parsed;
+  try{parsed=parseRepo(value)}catch{return}
+  const url=location.origin+location.pathname+'?repo='+encodeURIComponent(parsed.full);
+  try{
+    if(navigator.share){
+      await navigator.share({title:'Public AI agent & MCP repository audit',url});
+      $('share').textContent='Shared';
+    }else{
+      await navigator.clipboard.writeText(url);
+      $('share').textContent='Copied audit link';
+    }
+  }catch{
+    try{await navigator.clipboard.writeText(url);$('share').textContent='Copied audit link';}catch{$('share').textContent='Copy failed — use the address bar';}
+  }
+  setTimeout(()=>$('share').textContent='Copy shareable audit link',2500);
+});
 const prefill=new URLSearchParams(location.search).get('repo');
 if(prefill){
   repoInput.value=prefill;
