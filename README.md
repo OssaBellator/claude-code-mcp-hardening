@@ -119,3 +119,8 @@ jobs:
 ```
 
 The Action writes the audit to the GitHub job summary. It does not execute target repository code, install dependencies, or use network access from the audit logic. The Action is an inventory aid, not a vulnerability scanner or security certification.
+
+
+## Technical case study
+
+[Building a bounded AI-agent commerce and fulfillment workflow](https://ossabellator.github.io/claude-code-mcp-hardening/case-study-agent-ops.html) documents the provider design, GitHub automation, Stripe intake, automated fulfillment, IndexNow indexing, privacy boundaries, and verification approach behind this project.
