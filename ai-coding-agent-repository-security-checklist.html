@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Coding Agent Repository Security Checklist: Claude Code, MCP & GitHub Actions</title>
+<meta name="description" content="A practical repository security checklist for Claude Code, Codex, Cursor and MCP: permissions, rules files, secrets, GitHub Actions, tool authority, recovery and verification.">
+<link rel="canonical" href="https://ossabellator.github.io/claude-code-mcp-hardening/ai-coding-agent-repository-security-checklist.html">
+<meta property="og:title" content="AI Coding Agent Repository Security Checklist">
+<meta property="og:description" content="What to verify before an AI coding agent can read, edit, run tools, use MCP, or act through GitHub Actions.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://ossabellator.github.io/claude-code-mcp-hardening/ai-coding-agent-repository-security-checklist.html">
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#171717;background:#f5f4ef;line-height:1.65}
+*{box-sizing:border-box}body{margin:0}.wrap{max-width:860px;margin:auto;padding:48px 22px 80px}
+.hero,.card{background:#fff;border:1px solid #ddd9ce;border-radius:20px;padding:30px}.hero{padding:38px}
+.eyebrow{font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#666}
+h1{font-size:clamp(2.35rem,7vw,4.7rem);line-height:1;letter-spacing:-.04em;margin:.2em 0 .3em}h2{margin-top:42px}h3{margin-top:28px}
+.lead{font-size:1.18rem;color:#3f3f3b}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:24px 0}
+.card strong{display:block;margin-bottom:5px}.cta{display:inline-block;padding:12px 18px;border:1px solid currentColor;border-radius:9px;text-decoration:none;font-weight:800;margin:6px 8px 6px 0}
+.primary{background:#171717;color:#fff}.note{border-left:4px solid #171717;padding:12px 16px;background:#fff}.fine{font-size:.92rem;color:#666}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}li{margin:.55em 0}a{color:inherit}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"AI Coding Agent Repository Security Checklist: Claude Code, MCP & GitHub Actions","description":"A practical pre-flight checklist for repositories used with AI coding agents and MCP tools.","author":{"@type":"Person","name":"OssaBellator"},"mainEntityOfPage":"https://ossabellator.github.io/claude-code-mcp-hardening/ai-coding-agent-repository-security-checklist.html"}
+</script>
+</head>
+<body><main class="wrap">
+<section class="hero">
+<div class="eyebrow">Repository pre-flight · 2026</div>
+<h1>Before an AI coding agent acts on your repo, verify these boundaries.</h1>
+<p class="lead">Claude Code, Codex, Cursor, Copilot agent mode and other coding agents can cross boundaries that ordinary autocomplete never touched: shell execution, repository instructions, MCP tools, GitHub Actions, credentials, network access and remote writes. The checklist below is designed for one practical question: <strong>what should be explicit before you grant an agent real authority?</strong></p>
+<p><a class="cta primary" href="./free-audit.html">Run the free public-repo audit</a><a class="cta" href="./checklist.html">Open the full checklist</a></p>
+</section>
+
+<h2>Why the repository itself is now part of the security boundary</h2>
+<p>OWASP's Secure Coding with AI guidance treats repository content, persistent rules files, MCP servers, CI/CD agents and developer permissions as trust boundaries in agentic coding. That matters because an agent can ingest issue text, pull-request descriptions, READMEs, rules files, tool descriptions and command output as context, then act with whatever authority the surrounding runtime gives it.</p>
+<p>Microsoft makes a complementary point about MCP: the protocol standardizes tool discovery and execution, but does not itself provide a universal policy checkpoint that decides whether a particular agent should invoke a particular tool with particular arguments. In other words, tool availability is not the same thing as tool authorization.</p>
+
+<h2>The 10 checks</h2>
+
+<h3>1. Inventory every persistent instruction surface</h3>
+<p>List the files that can steer future agent sessions: <code>AGENTS.md</code>, <code>CLAUDE.md</code>, Copilot instruction files, Cursor/Windsurf rules, hooks and any generated instruction layer. Decide which file is canonical and remove contradictory or abandoned copies.</p>
+<div class="note">Treat repository instructions as code-like authority: review changes, keep them scoped, and do not assume text is harmless because it is "only documentation."</div>
+
+<h3>2. Separate read authority from write authority</h3>
+<p>An agent that can read the repository is materially different from one that can edit files, execute arbitrary shell commands, push branches, modify workflows or call production APIs. Grant the smallest action set that accomplishes the task, and preserve explicit approval gates for irreversible or externally visible actions.</p>
+
+<h3>3. Audit MCP servers as privileged integrations</h3>
+<p>Record each MCP server, who operates it, which tools it exposes, what data it can access, whether calls are authenticated, and whether credentials are scoped to the minimum necessary capability. Anthropic's MCP tunnel security guidance recommends OAuth, narrow network reach, limited MCP server scope, credential protection and regular rotation. Those principles apply even when you are not using Anthropic's tunnel product.</p>
+
+<h3>4. Do not use model instructions as the only enforcement layer</h3>
+<p>A prompt that says "never call dangerous tools" is useful guidance, but it is not a deterministic authorization boundary. Microsoft recommends an explicit governance layer between tool discovery and execution so tool calls can be allowed, denied or require approval based on policy.</p>
+
+<h3>5. Protect credentials before the agent sees them</h3>
+<p>Keep long-lived secrets out of tracked files, agent-readable prompts and broadly inherited environment variables. Prefer scoped credentials and short-lived tokens where available. GitHub now exposes secret-scanning capabilities through its MCP server so supported AI coding agents can detect exposed credentials before code is pushed.</p>
+
+<h3>6. Review GitHub Actions as an agent execution environment</h3>
+<p>Pay special attention to workflow triggers, token permissions, use of <code>pull_request_target</code>, third-party actions, persistent credentials and any job that gives an agent access to organization or deployment secrets. A workflow triggered by untrusted issue or pull-request content deserves a stricter threat model than a developer-invoked local task.</p>
+
+<h3>7. Pin and verify third-party execution dependencies</h3>
+<p>Pin GitHub Actions and other executable integrations to immutable versions where practical. Verify AI-suggested packages before installation rather than assuming a generated dependency name is legitimate. OWASP specifically calls out hallucinated or typosquatted dependencies as an agentic coding risk.</p>
+
+<h3>8. Make recovery a first-class requirement</h3>
+<p>Before granting write authority, know how to undo the action: version-control rollback, branch protection, credential rotation, workflow disablement, deployment rollback and a tested path for restoring local configuration. A capable agent plus weak recovery is an operational risk even when no attacker is involved.</p>
+
+<h3>9. Verify outputs with independent checks</h3>
+<p>Builds, tests, linters, type checks, dependency scanners and secret scanning provide evidence that is independent of the model's own confidence. Do not let the same agent both define the acceptance test and silently weaken that test to make its change pass.</p>
+
+<h3>10. Keep an explicit human/accountability boundary</h3>
+<p>Decide which events still require a person: accepting contractual terms, moving money, rotating production credentials, merging privileged workflow changes, changing access control, publishing externally or deleting durable data. The faster the agent operates, the more important it is that these boundaries are obvious before execution begins.</p>
+
+<h2>A compact repository pre-flight</h2>
+<div class="grid">
+<div class="card"><strong>Instructions</strong>One canonical rules/instruction path; changes reviewed like code.</div>
+<div class="card"><strong>MCP/tools</strong>Known operator, authenticated access, least privilege and bounded arguments.</div>
+<div class="card"><strong>Secrets</strong>No long-lived credentials in tracked files; scanning and rotation paths exist.</div>
+<div class="card"><strong>CI</strong>Workflow triggers and token permissions do not give untrusted input unnecessary authority.</div>
+<div class="card"><strong>Recovery</strong>Rollback and credential-revocation steps are known before remote writes are enabled.</div>
+<div class="card"><strong>Verification</strong>Independent tests/scanners validate the result instead of relying on the agent's explanation.</div>
+</div>
+
+<h2>Choose the smallest next step</h2>
+<p>If you only need visibility, start free. If you want a human-reviewed report, use the A$39 public-repository audit. If the repository is changing quickly, the A$79 watch adds day-30 and day-60 evidence. The A$149 service is for bounded hands-on remediation.</p>
+<p>
+<a class="cta" href="./free-audit.html">Free browser audit</a>
+<a class="cta" href="./repo-audit.html">A$39 public-repo audit</a>
+<a class="cta" href="./watch.html">A$79 60-day watch</a>
+<a class="cta primary" href="https://buy.stripe.com/9B600d9Mocei2RV8c104801?client_reference_id=repo_security_checklist">A$149 implementation</a>
+</p>
+
+<h2>Primary references</h2>
+<ul>
+<li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_Coding_with_AI_Cheat_Sheet.html">OWASP — Secure Coding with AI Cheat Sheet</a></li>
+<li><a href="https://developer.microsoft.com/blog/securing-mcp-a-control-plane-for-agent-tool-execution/">Microsoft for Developers — Securing MCP: A Control Plane for Agent Tool Execution</a></li>
+<li><a href="https://platform.claude.com/docs/en/agents-and-tools/mcp-tunnels/security">Anthropic — MCP tunnels security</a></li>
+<li><a href="https://docs.github.com/en/code-security/how-tos/use-ghas-with-ai-coding-agents/scan-for-secrets-with-github-mcp-server">GitHub Docs — Scanning for secrets with the GitHub MCP server</a></li>
+</ul>
+<p class="fine">This checklist is a practical hardening guide, not a penetration test, vulnerability certification, compliance assessment or guarantee that every repository risk will be found.</p>
+</main></body></html>
