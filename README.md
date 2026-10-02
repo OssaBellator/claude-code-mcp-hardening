@@ -66,3 +66,11 @@ If you are starting from zero, the free checklist is usually the better first st
 ## License
 
 The checklist and public documentation in this repository are provided under the MIT License. The paid implementation service is separate from the open-source material.
+
+
+## A$39 public repository audit
+
+For a lower-friction read-only review, the **Public GitHub AI Agent & MCP Hardening Audit** covers one public repository for **A$39 AUD**. It requires no private-repository access and does not execute repository code.
+
+- [View the A$39 audit](https://ossabellator.github.io/claude-code-mcp-hardening/repo-audit.html)
+- [See a sample delivered audit](https://github.com/OssaBellator/claude-code-mcp-hardening/issues/1)
