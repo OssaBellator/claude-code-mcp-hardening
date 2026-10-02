@@ -91,4 +91,4 @@ A focused review is useful when the workspace works but nobody can confidently a
 
 For one existing repository/workspace, the fixed-scope implementation service is **A$149 one-time**:
 
-[Book the Claude Code & MCP Workflow Audit + Hardening](https://buy.stripe.com/9B600d9Mocei2RV8c104801)
+[Book the Claude Code & MCP Workflow Audit + Hardening](https://buy.stripe.com/9B600d9Mocei2RV8c104801?client_reference_id=github_checklist_implementation)
