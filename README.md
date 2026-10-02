@@ -1,5 +1,7 @@
 # Claude Code & MCP Workspace Hardening
 
+[![Self-audit](https://github.com/OssaBellator/claude-code-mcp-hardening/actions/workflows/self-audit.yml/badge.svg)](https://github.com/OssaBellator/claude-code-mcp-hardening/actions/workflows/self-audit.yml)
+
 A practical self-audit checklist for developers using **Claude Code, Codex, Cursor, MCP servers, hooks, skills, scheduled agents, or other AI-assisted coding tools**.
 
 The goal is simple: keep the speed benefits of agentic coding while reducing fragile configuration, accidental over-permission, credential exposure, and recovery surprises.
