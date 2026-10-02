@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Coding Agent Repository Hardening Guide: Claude Code, MCP & GitHub Actions</title>
+<meta name="description" content="A practical evidence-based hardening guide for repositories used with Claude Code, MCP servers, AI coding agents and GitHub Actions. Permissions, MCP scope, hooks, CI, secrets and recovery.">
+<link rel="canonical" href="https://ossabellator.github.io/claude-code-mcp-hardening/hardening-guide.html">
+<meta property="og:title" content="AI Coding Agent Repository Hardening Guide">
+<meta property="og:description" content="Twelve concrete checks for Claude Code, MCP and GitHub Actions repositories, grounded in current vendor security guidance.">
+<meta property="og:type" content="article">
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#191918;background:#f5f4ef;line-height:1.6}*{box-sizing:border-box}body{margin:0}.wrap{max-width:900px;margin:auto;padding:44px 22px 80px}article,.cta{background:#fff;border:1px solid #ddd9ce;border-radius:20px;padding:34px}h1{font-size:clamp(2.3rem,6vw,4.6rem);line-height:1;letter-spacing:-.04em;margin:.18em 0 .3em}h2{margin-top:2em}h3{margin-bottom:.25em}.lead{font-size:1.16rem;color:#41413d}.fine{font-size:.92rem;color:#666}.home{display:inline-block;margin-bottom:18px;color:#555}.check{border-top:1px solid #e5e1d7;padding-top:8px}.why{background:#f7f5ef;border-radius:12px;padding:14px 16px}.btn{display:inline-block;padding:13px 17px;border-radius:11px;text-decoration:none;font-weight:800;background:#171717;color:#fff;margin:5px 8px 5px 0}.cta{margin-top:18px;background:#171717;color:#fff}.cta .btn{background:#fff;color:#171717}code{background:#f0eee7;border-radius:5px;padding:.08em .3em}a{color:inherit}.sources li{margin:.55em 0}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"AI Coding Agent Repository Hardening Guide: Claude Code, MCP & GitHub Actions","author":{"@type":"Person","name":"OssaBellator"},"about":["Claude Code","Model Context Protocol","GitHub Actions","AI coding agents","repository security"],"url":"https://ossabellator.github.io/claude-code-mcp-hardening/hardening-guide.html"}</script>
+</head><body><main class="wrap">
+<a class="home" href="./">← AI coding workspace hardening</a>
+<article>
+<p class="fine"><strong>Practical guide · updated October 2026</strong></p>
+<h1>Harden the repository around the coding agent—not just the code it writes.</h1>
+<p class="lead">AI coding agents add a second security surface around your application: repository instructions, permission rules, MCP servers, hooks, CI workflows, credentials and recovery paths. The checks below focus on that operating surface. They are intentionally narrower than a full application-security review.</p>
+
+<h2>1. Make the agent instruction surface explicit</h2>
+<div class="check"><p>Choose a canonical repository instruction file and document build, test, verification and forbidden-action boundaries. Multiple overlapping instruction surfaces are not automatically unsafe, but they are harder to review and easier to let drift.</p>
+<div class="why"><strong>Why:</strong> prompt instructions shape what an agent tries to do, but Claude Code's own documentation distinguishes those instructions from enforced permissions. Treat instructions as operating guidance, not an access-control mechanism.</div></div>
+
+<h2>2. Enforce authority with permissions, not prose</h2>
+<div class="check"><p>Review allow, ask and deny rules. Prefer the narrowest rules that support the workflow, especially for shell commands, network access and tools that mutate external systems. Avoid broad unattended authority unless the environment is deliberately isolated.</p>
+<div class="why"><strong>Vendor guidance:</strong> Claude Code supports fine-grained tool permissions; deny rules take precedence over ask and allow rules. Its documentation says <code>bypassPermissions</code> should be used only in isolated environments such as containers or VMs.</div></div>
+
+<h2>3. Inventory every MCP configuration scope</h2>
+<div class="check"><p>Do not assume a repository's <code>.mcp.json</code> is the complete MCP inventory. Check project, local, user, plugin, connector and managed sources where relevant. Remove duplicate or stale servers and document which definition is expected to win.</p>
+<div class="why"><strong>Vendor guidance:</strong> Claude Code currently supports local, project and user MCP scopes, plus plugin/connectors and managed configuration. Project-scoped servers live in <code>.mcp.json</code>, while local and user definitions can live outside the repository.</div></div>
+
+<h2>4. Keep credentials out of tracked configuration</h2>
+<div class="check"><p>Use environment-variable references or a secret store instead of literal tokens in repository files. Review tracked <code>.env</code>, credential, private-key and package-registry configuration paths. If a real credential ever becomes public, rotation matters more than merely deleting the current file.</p></div>
+
+<h2>5. Use hooks for deterministic guardrails</h2>
+<div class="check"><p>When a rule must be enforced every time—blocking a destructive command, protecting a path, or validating a tool input—prefer an enforcement mechanism such as a permission deny rule or <code>PreToolUse</code> hook over a natural-language reminder.</p>
+<div class="why"><strong>Vendor guidance:</strong> Claude Code's <code>PreToolUse</code> hook runs before tool execution and can allow, deny, ask or modify a call; its permissions documentation states that prompt instructions do not change what the runtime permits.</div></div>
+
+<h2>6. Sandbox high-authority shell execution</h2>
+<div class="check"><p>Separate “the model chose a command” from “the operating system allowed the command.” For risky automation, use filesystem/network isolation, a disposable worktree/container/VM, or another boundary that limits damage even when a command is approved incorrectly.</p>
+<div class="why"><strong>Vendor guidance:</strong> Anthropic documents sandboxed Bash with filesystem and network isolation and recommends VMs for scripts/tool calls involving untrusted or external content.</div></div>
+
+<h2>7. Give GitHub Actions the least privilege it needs</h2>
+<div class="check"><p>Declare explicit workflow/job permissions rather than inheriting broad defaults. Pay particular attention to workflows that publish releases, write issues, mutate repositories, or handle credentials.</p></div>
+
+<h2>8. Treat <code>pull_request_target</code> as privileged</h2>
+<div class="check"><p>Use it only when its base-repository trust context is actually required. Never combine privileged secrets/token access with checking out and executing untrusted pull-request code.</p>
+<div class="why"><strong>GitHub guidance:</strong> <code>pull_request_target</code> receives the base repository's trust, including a privileged token and potentially secrets. GitHub warns that checking out fork code and then executing it can create a “pwn request” vulnerability.</div></div>
+
+<h2>9. Pin security-sensitive third-party Actions</h2>
+<div class="check"><p>Review external <code>uses:</code> references. Moving tags and branches are convenient, but a reviewed full commit SHA is a stronger supply-chain boundary for sensitive workflows. Keep an update process so pinning does not become permanent staleness.</p></div>
+
+<h2>10. Define one reproducible verification path</h2>
+<div class="check"><p>Make the commands that prove a change safe obvious: tests, lint, typecheck, build, policy checks or integration tests. Agents should not have to infer the quality gate from scattered CI files.</p></div>
+
+<h2>11. Design recovery before autonomy</h2>
+<div class="check"><p>Know how to return to a known-good commit, restore important local-only state, recreate credentials on another machine, and stop or deduplicate recurring jobs. Test at least one recovery path instead of treating rollback as documentation-only.</p></div>
+
+<h2>12. Verify external effects independently</h2>
+<div class="check"><p>A successful CLI line is not proof of a successful deploy, payment, notification or publication. Fetch deployed URLs, verify Checkout Sessions rather than redirects, inspect created issues/PRs, and preserve just enough evidence for another person to review the result.</p></div>
+
+<h2>What a repository-only audit cannot prove</h2>
+<p>A public repository audit cannot see private settings, organization policy, user-scoped MCP servers, secret stores, runtime infrastructure, local session state, or what a tool actually does after connecting. It should be used for triage and hardening evidence—not as a security certification.</p>
+
+<h2>Primary references</h2>
+<ul class="sources">
+<li><a href="https://code.claude.com/docs/en/security">Claude Code — Security</a></li>
+<li><a href="https://code.claude.com/docs/en/permissions">Claude Code — Configure permissions</a></li>
+<li><a href="https://code.claude.com/docs/en/sandboxing">Claude Code — Sandboxing</a></li>
+<li><a href="https://code.claude.com/docs/en/hooks">Claude Code — Hooks reference</a></li>
+<li><a href="https://code.claude.com/docs/en/mcp">Claude Code — MCP configuration and scopes</a></li>
+<li><a href="https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target">GitHub — Securely using pull_request_target</a></li>
+<li><a href="https://docs.github.com/en/actions/reference/security/secure-use">GitHub Actions — Secure use reference</a></li>
+</ul>
+<p class="fine">This guide summarizes operational controls from the linked sources and general repository-hardening practice. It is not legal advice, a penetration test, or a claim that these checks cover every vulnerability.</p>
+</article>
+
+<section class="cta">
+<h2 style="margin-top:0">Apply the guide to a public repository</h2>
+<p>Start with the zero-signup browser audit. It reads bounded public GitHub evidence and does not clone or execute the target repository.</p>
+<a class="btn" href="./free-audit.html">Run the free browser audit</a>
+<a class="btn" href="./repo-audit.html">A$39 evidence-backed report</a>
+<a class="btn" href="./watch.html">A$79 60-day watch</a>
+</section>
+</main></body></html>
