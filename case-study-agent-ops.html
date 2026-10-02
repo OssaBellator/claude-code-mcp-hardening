@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Case Study: Building a Bounded AI-Agent Commerce & Fulfillment Workflow</title>
+<meta name="description" content="Technical case study: MCP capability design, public GitHub audit tooling, Stripe payment links, automated fulfillment, GitHub Pages, IndexNow, privacy-minimized intake, and verification.">
+<link rel="canonical" href="https://ossabellator.github.io/claude-code-mcp-hardening/case-study-agent-ops.html">
+<meta property="og:title" content="Case Study: Bounded AI-Agent Commerce & Fulfillment Workflow">
+<meta property="og:description" content="From tool audit to live checkout, public audit utility, automated fulfillment, indexing and verification—without broad credentials or target-code execution.">
+<meta property="og:type" content="article">
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#171717;background:#f5f4ef;line-height:1.6}*{box-sizing:border-box}body{margin:0}.wrap{max-width:900px;margin:auto;padding:48px 22px 90px}article{background:#fff;border:1px solid #ddd9ce;border-radius:22px;padding:clamp(24px,5vw,48px)}a{color:#171717}.home{display:inline-block;margin-bottom:20px;color:#5e5b54}h1{font-size:clamp(2.35rem,7vw,4.6rem);line-height:.98;letter-spacing:-.045em;margin:.16em 0 .3em}h2{margin-top:2em;line-height:1.2}.lead{font-size:1.18rem;color:#41413d}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.card{background:#f7f5ef;border-radius:14px;padding:17px}.card strong{display:block;font-size:1.35rem}.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f4f1e9;border-radius:12px;padding:14px;overflow-wrap:anywhere}.note{border-left:4px solid #171717;background:#f7f5ef;padding:16px;border-radius:10px}.fine{font-size:.92rem;color:#67645d}.cta{background:#171717;color:#fff;border-radius:18px;padding:24px;margin-top:30px}.cta a{display:inline-block;background:#fff;color:#171717;text-decoration:none;font-weight:800;padding:11px 15px;border-radius:10px;margin:5px 6px 0 0}
+</style></head>
+<body><main class="wrap"><a class="home" href="./">← AI coding workspace hardening</a><article>
+<div class="fine">Technical case study · 2 October 2026</div>
+<h1>Building a bounded AI-agent commerce and fulfillment workflow</h1>
+<p class="lead">This project started as a simple objective—turn an AI-assisted engineering stack into a revenue-capable service—and exposed the harder systems problem underneath: commerce, acquisition, delivery, privacy, permissions, recovery and verification all have to agree on the same operating boundary.</p>
+
+<h2>What was built</h2>
+<div class="grid">
+<div class="card"><strong>3</strong>live Stripe service tiers: A$39 public audit, A$79 60-day watch, A$149 hands-on hardening.</div>
+<div class="card"><strong>1</strong>zero-signup browser audit for public GitHub repositories.</div>
+<div class="card"><strong>1</strong>reusable GitHub Action + dependency-free CLI inventory tool.</div>
+<div class="card"><strong>9+</strong>public search/index surfaces submitted through a bounded IndexNow capability.</div>
+</div>
+
+<h2>The engineering constraints</h2>
+<ul>
+<li>Do not expose the private Minimal MCP source tree to create a public offer.</li>
+<li>Do not give the audit tool arbitrary command execution over customer repositories.</li>
+<li>Do not collect payment/customer fields that are not needed for fulfillment.</li>
+<li>Do not depend on a broken or stale hosting credential when a safer owned surface exists.</li>
+<li>Do not treat “the deploy command succeeded” or “checkout loaded” as proof of the final outcome.</li>
+<li>Do not silently send proposals, spend marketplace credits, or make other externally binding actions without the required authority.</li>
+</ul>
+
+<h2>1. Replace a broken deployment path with an owned public surface</h2>
+<p>The original offer domain was serving the wrong artifact. The hosting credential was also rejected as unauthorized, making blind redeployment unsafe. Rather than widen access, the project moved the public offer to a new isolated GitHub repository and GitHub Pages site containing only intentional public assets.</p>
+<p>The public repository received a constrained README, checklist, landing pages, reusable Action, report methodology, sample report, sitemap, robots metadata and an IndexNow key. Private source and runtime state were explicitly excluded.</p>
+
+<h2>2. Turn the service into a product ladder</h2>
+<p>The offer was split by authority and fulfillment cost:</p>
+<ul>
+<li><strong>Free:</strong> browser/CLI/Action inventory with no target code execution.</li>
+<li><strong>A$39:</strong> deeper read-only audit of one public GitHub repository.</li>
+<li><strong>A$79:</strong> baseline, day-30 and day-60 public-repository reports.</li>
+<li><strong>A$149:</strong> hands-on audit and bounded implementation for one existing workspace.</li>
+</ul>
+<p>This creates a path from zero-friction evidence to paid implementation without pretending every buyer needs private-repo access.</p>
+
+<h2>3. Build a narrow public-repository audit capability</h2>
+<p>The Minimal MCP GitHub provider was extended with a purpose-built read-only audit operation. It uses the GitHub API to inspect a bounded repository tree and selected public configuration files. It does <strong>not</strong> clone the target, install dependencies, execute build scripts, run workflows, or start MCP servers.</p>
+<p>Current rule families include agent-instruction sprawl, multiple MCP configs, workflow surface, <code>permissions: write-all</code>, <code>pull_request_target</code>, movable third-party Action refs, secret-like tracked paths, basic quality-gate signals and public security-policy hygiene.</p>
+<div class="note"><strong>Validation:</strong> the capability was exercised against multiple unrelated public MCP/Claude repositories and against malformed repository inputs. Invalid targets fail before invoking GitHub.</div>
+
+<h2>4. Minimize paid intake</h2>
+<p>Stripe Payment Links collect only the fields required to deliver the public products: GitHub username, public repository URL and optional focus. Reporting omits checkout email, name, address and payment-method details.</p>
+<p>Post-payment handoff URLs are fixed to the owned GitHub Pages site. During the audit, one live A$39 redirect was found pointing at an obsolete Pages project; the live Payment Link was repaired and re-read from Stripe to verify the change.</p>
+
+<h2>5. Automate fulfillment without leaking payment identifiers</h2>
+<p>Recurring fulfillment checks read paid intake, derive a one-way fulfillment key for public delivery, and avoid publishing raw Checkout Session IDs. The public report format separates:</p>
+<ul>
+<li>evidence actually inspected;</li>
+<li>review priorities from vulnerability claims;</li>
+<li>positive controls from findings;</li>
+<li>limitations caused by public-only evidence.</li>
+</ul>
+
+<h2>6. Add acquisition attribution without another analytics vendor</h2>
+<p>Paid CTAs use Stripe Payment Link <code>client_reference_id</code> values that contain only allowlisted placement codes such as <code>free_audit_report</code> and <code>repo_audit_page</code>. The reporting provider collapses unknown values to <code>unattributed</code> and aggregates sessions, completions, paid sessions and gross paid AUD by source.</p>
+<p>No personal data is embedded in these source codes.</p>
+
+<h2>7. Make indexing repeatable</h2>
+<p>A dedicated Minimal MCP IndexNow capability now:</p>
+<ul>
+<li>fetches the public verification-key file;</li>
+<li>fetches the live sitemap;</li>
+<li>rejects URLs outside the owned hardening-site prefix;</li>
+<li>caps the submission at 100 URLs;</li>
+<li>submits the bounded set to the official IndexNow endpoint.</li>
+</ul>
+<p>The validation run returned HTTP 200 from IndexNow.</p>
+
+<h2>8. Verify the funnel at system boundaries</h2>
+<p>The public funnel was programmatically checked end-to-end:</p>
+<ul>
+<li>every sitemap page returned HTTP 200;</li>
+<li>every local CTA resolved;</li>
+<li>all three Stripe checkout URLs returned HTTP 200;</li>
+<li>the browser audit was exercised through managed Chromium against a real public repository;</li>
+<li>GitHub Pages build status was checked independently;</li>
+<li>Stripe aggregate reporting was read back after checkout changes.</li>
+</ul>
+
+<h2>Current commercial state</h2>
+<p>At the time this case study was written, the system had live products and observed checkout sessions but <strong>no completed paid sessions</strong>. That is intentional to state explicitly: this case study demonstrates engineering and operating-system capability, not fabricated revenue or customer outcomes.</p>
+
+<h2>What this demonstrates</h2>
+<p>This work is representative of the kind of engineering needed for AI-agent infrastructure that spans more than an LLM call: tool/provider design, permissions, GitHub automation, commerce APIs, privacy boundaries, public delivery, recurring jobs, failure recovery, observability and independent verification.</p>
+
+<div class="cta">
+<h2 style="margin-top:0">Try the bounded tooling</h2>
+<a href="./free-audit.html">Run free browser audit</a>
+<a href="https://github.com/OssaBellator/claude-code-mcp-hardening">View source / Action</a>
+<a href="./claude-code-mcp-security-guide.html">Read hardening guide</a>
+</div>
+<p class="fine">No customer credentials, payment details, or private repository contents are included in this case study.</p>
+</article></main></body></html>
