@@ -4,6 +4,8 @@ A practical self-audit checklist for developers using **Claude Code, Codex, Curs
 
 The goal is simple: keep the speed benefits of agentic coding while reducing fragile configuration, accidental over-permission, credential exposure, and recovery surprises.
 
+**No-install option:** [Run the free browser audit](https://ossabellator.github.io/claude-code-mcp-hardening/free-audit.html) against any public GitHub repository. It uses bounded public GitHub evidence and does not execute target repository code.
+
 ## Free self-audit
 
 Start with the [AI coding workspace hardening checklist](./CHECKLIST.md). It covers:
