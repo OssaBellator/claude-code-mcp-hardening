@@ -84,3 +84,30 @@ The watch does not clone or execute the target repository, install dependencies,
 
 - [View the A$79 60-day watch](https://ossabellator.github.io/claude-code-mcp-hardening/watch.html)
 - [See the sample report format](https://github.com/OssaBellator/claude-code-mcp-hardening/issues/1)
+
+
+## GitHub Action
+
+Run the same zero-dependency filename-level inventory in GitHub Actions:
+
+```yaml
+name: AI agent repository audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: OssaBellator/claude-code-mcp-hardening@v1
+```
+
+The Action writes the audit to the GitHub job summary. It does not execute target repository code, install dependencies, or use network access from the audit logic. The Action is an inventory aid, not a vulnerability scanner or security certification.
