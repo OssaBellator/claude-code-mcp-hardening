@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code + MCP Security & Hardening Guide (2026)</title>
+<meta name="description" content="Practical 2026 hardening guide for Claude Code and MCP: permissions, sandboxing, repository trust, MCP server inventory, credential boundaries, GitHub Actions, recovery and verification.">
+<link rel="canonical" href="https://ossabellator.github.io/claude-code-mcp-hardening/claude-code-mcp-security-guide.html">
+<meta property="og:title" content="Claude Code + MCP Security & Hardening Guide (2026)">
+<meta property="og:description" content="A practical evidence-backed guide to permission boundaries, sandboxing, MCP configuration, automation, recovery and verification.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://ossabellator.github.io/claude-code-mcp-hardening/claude-code-mcp-security-guide.html">
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#171717;background:#f5f4ef;line-height:1.62}
+*{box-sizing:border-box}body{margin:0}.wrap{max-width:900px;margin:0 auto;padding:48px 22px 90px}
+article{background:#fff;border:1px solid #ddd9ce;border-radius:22px;padding:clamp(24px,5vw,48px)}
+a{color:#171717}.home{display:inline-block;margin-bottom:20px;color:#5e5b54}
+h1{font-size:clamp(2.4rem,7vw,4.7rem);line-height:.98;letter-spacing:-.045em;margin:.15em 0 .3em}
+h2{font-size:1.8rem;margin-top:2.2em;line-height:1.15}h3{margin-top:1.6em}
+.lead{font-size:1.18rem;color:#3f3e39}.meta,.fine{font-size:.92rem;color:#66645d}
+.note{background:#f3f1e9;border-radius:14px;padding:18px;margin:18px 0}
+.good{border-left:4px solid #171717}.warn{border-left:4px solid #9c6800}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f3f1e9;padding:.12em .32em;border-radius:5px}
+pre{background:#171717;color:#f7f7f4;border-radius:14px;padding:18px;overflow:auto;line-height:1.45}
+pre code{background:transparent;padding:0}.toc{background:#f7f5ef;border-radius:16px;padding:18px 22px}.toc li{margin:.35em 0}
+.check{list-style:none;padding:0}.check li{position:relative;padding:.35em 0 .35em 1.75em}.check li:before{content:"☐";position:absolute;left:0}
+.cta{background:#171717;color:#fff;border-radius:18px;padding:26px;margin-top:36px}.cta a{color:#171717;background:#fff;text-decoration:none;font-weight:800;padding:12px 16px;border-radius:10px;display:inline-block;margin:6px 6px 0 0}
+.refs li{margin:.6em 0}
+@media(max-width:680px){article{padding:24px 20px}}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"TechArticle","headline":"Claude Code + MCP Security & Hardening Guide (2026)","dateModified":"2026-10-02","author":{"@type":"Person","name":"OssaBellator"},"mainEntityOfPage":"https://ossabellator.github.io/claude-code-mcp-hardening/claude-code-mcp-security-guide.html"}
+</script>
+</head>
+<body><main class="wrap">
+<a class="home" href="./">← AI coding workspace hardening</a>
+<article>
+<div class="meta">Last reviewed: 2 October 2026 · Claude Code + Model Context Protocol</div>
+<h1>Claude Code + MCP security and hardening guide</h1>
+<p class="lead">The main risk in an AI coding workspace is not that an agent can edit code. It is that authority accumulates across several surfaces—repository instructions, persisted permissions, MCP servers, hooks, browser sessions, CI credentials and scheduled automation—until nobody can state what can act, with which credentials, against which systems, or how to recover if it fails.</p>
+<p>This guide turns that problem into a reviewable operating model. It is grounded in Anthropic’s current Claude Code security, permissions, settings and MCP documentation, then extends those controls into practical repository and automation hygiene.</p>
+
+<div class="toc"><strong>Contents</strong><ol>
+<li><a href="#inventory">Inventory every authority surface</a></li>
+<li><a href="#trust">Treat repository trust as a real boundary</a></li>
+<li><a href="#permissions">Make permissions explicit and review persisted rules</a></li>
+<li><a href="#sandbox">Use sandboxing for enforcement, not prompt text</a></li>
+<li><a href="#mcp">Audit the whole MCP surface</a></li>
+<li><a href="#credentials">Separate credentials by purpose and blast radius</a></li>
+<li><a href="#automation">Bound hooks, CI and scheduled automation</a></li>
+<li><a href="#recovery">Design recovery before autonomy</a></li>
+<li><a href="#verify">Verify outcomes independently</a></li>
+<li><a href="#baseline">A practical minimum baseline</a></li>
+</ol></div>
+
+<h2 id="inventory">1. Inventory every authority surface</h2>
+<p>Start with a list, not a policy. Record every surface that can change files, execute commands, reach the network, use credentials, or trigger downstream work:</p>
+<ul>
+<li>Claude Code repository instructions such as <code>CLAUDE.md</code> and shared settings;</li>
+<li>other agent instructions such as <code>AGENTS.md</code>, Copilot instructions, Cursor/Windsurf rules and skills;</li>
+<li>project and user MCP configurations;</li>
+<li>hooks, plugins, commands, subagents and browser integrations;</li>
+<li>GitHub Actions or other CI jobs;</li>
+<li>scheduled/background agents and deployment automation.</li>
+</ul>
+<p>For each item, classify authority as read-only, local-write, remote-read or remote-write. Then record the credential or identity that makes the action possible. A tool name alone does not tell you its blast radius.</p>
+<div class="note good"><strong>Fast path:</strong> the <a href="./free-audit.html">free browser audit</a> inventories common public GitHub agent/MCP/workflow surfaces without cloning or executing the target repository.</div>
+
+<h2 id="trust">2. Treat repository trust as a real boundary</h2>
+<p>Claude Code has workspace trust and separate approval behavior for project-scoped MCP servers. Anthropic also notes that non-interactive <code>-p</code> sessions do not show the same trust prompts. That means “the user would notice the prompt” is not a reliable control for every execution mode.</p>
+<p>Before opening an unfamiliar repository with an agent that has meaningful authority:</p>
+<ul class="check">
+<li>Inspect repository-level agent settings, hooks and MCP configuration first.</li>
+<li>Prefer a disposable clone, container, VM or low-privilege environment for untrusted code.</li>
+<li>Do not assume a repository is safe because it only contains source code; project configuration can influence agent behavior before normal application code runs.</li>
+<li>Separate evaluation of an unfamiliar repository from access to production credentials.</li>
+</ul>
+
+<h2 id="permissions">3. Make permissions explicit and review persisted rules</h2>
+<p>Claude Code supports allow, ask and deny rules. In Manual mode, many actions ask first; other modes change how approval is decided. A critical operational detail is persistence: some approvals can be saved to repository-local settings and apply to future sessions.</p>
+<p>Review permissions with <code>/permissions</code> and answer three questions:</p>
+<ol>
+<li>Which rules are intentional?</li>
+<li>Which rules were added as a convenience workaround and now grant more than expected?</li>
+<li>Which actions should be denied rather than merely left to an approval prompt?</li>
+</ol>
+<p>Prefer narrow tool/input rules over broad command families. A rule should express the smallest stable capability needed by the workflow, not the fastest way to silence prompts.</p>
+<div class="note warn"><strong>Prompt approval is not a sandbox.</strong> If a Bash command is approved and the process is not OS-restricted, it can act with the authority of the user account.</div>
+
+<h2 id="sandbox">4. Use sandboxing for enforcement, not prompt text</h2>
+<p>Anthropic distinguishes the working-directory permission boundary from OS-level sandboxing. The former controls when Claude asks; the latter restricts filesystem and network access at execution time.</p>
+<p>For higher-risk repositories or unattended work, define an execution boundary that remains true even when the model, a prompt, or an instruction file is wrong:</p>
+<ul>
+<li>filesystem paths the agent may read and write;</li>
+<li>network destinations it may reach;</li>
+<li>commands or runtimes it may launch;</li>
+<li>which credentials are present inside that boundary;</li>
+<li>how generated artifacts leave the sandbox.</li>
+</ul>
+<p>Use dev containers, VMs or other isolation where the consequence of a bad command is materially higher than the inconvenience of setup.</p>
+
+<h2 id="mcp">5. Audit the whole MCP surface</h2>
+<p>A project <code>.mcp.json</code> is useful evidence, but it is not the complete MCP inventory. Anthropic documents MCP servers at multiple scopes, plus servers introduced by plugins and connectors. A repository-only review can therefore miss authority loaded from outside the repo.</p>
+<p>For every MCP server, record:</p>
+<ul class="check">
+<li>where it is configured and which sessions can load it;</li>
+<li>who publishes or controls it;</li>
+<li>what tools/resources it exposes;</li>
+<li>whether operations are read-only or can mutate remote systems;</li>
+<li>which token/account/identity it uses;</li>
+<li>whether the credential is narrower than the human user’s normal account;</li>
+<li>how the server fails when its dependency or credential is unavailable.</li>
+</ul>
+<p>Anthropic recommends writing your own MCP servers or using providers you trust and notes that MCP servers are not automatically security-audited by Anthropic. Treat every server as code with authority, not as a harmless context plugin.</p>
+
+<h2 id="credentials">6. Separate credentials by purpose and blast radius</h2>
+<p>Credential isolation is one of the highest-leverage controls because it limits what a mistaken tool call can do.</p>
+<ul class="check">
+<li>Use read-only API keys for reporting and diagnostics when possible.</li>
+<li>Separate development, deployment and production-admin credentials.</li>
+<li>Keep secrets out of repository files, prompts, issue bodies, generated logs and screenshots.</li>
+<li>Make credentials rotatable without source-code edits.</li>
+<li>Prefer short-lived or provider-managed identity where available.</li>
+<li>Test that tool output does not echo authorization headers, environment variables or secret-bearing config.</li>
+</ul>
+<p>Do not treat “the agent was instructed not to print the token” as a credential control.</p>
+
+<h2 id="automation">7. Bound hooks, CI and scheduled automation</h2>
+<p>Once a task can run without a person watching the terminal, the operating model needs explicit failure and recovery semantics.</p>
+<p>For hooks, CI jobs and scheduled agents, define:</p>
+<ul>
+<li><strong>owner:</strong> who is responsible for the workflow;</li>
+<li><strong>trigger:</strong> exactly what causes it to run;</li>
+<li><strong>authority:</strong> what it can read/write locally and remotely;</li>
+<li><strong>idempotency:</strong> whether retrying can duplicate side effects;</li>
+<li><strong>retry bound:</strong> when it stops retrying;</li>
+<li><strong>state:</strong> how you distinguish never-ran, failed and completed;</li>
+<li><strong>stop condition:</strong> how the workflow is disabled or expires.</li>
+</ul>
+<p>For GitHub Actions, keep repository permissions explicit, minimize write scopes, and pin security-sensitive third-party actions to reviewed immutable revisions where practical.</p>
+
+<h2 id="recovery">8. Design recovery before autonomy</h2>
+<p>A workflow is not operationally mature until recovery is known. Document and test:</p>
+<ul class="check">
+<li>the known-good Git commit or release to restore;</li>
+<li>which local-only state must be preserved separately from the working tree;</li>
+<li>which credentials must be recreated on another machine;</li>
+<li>how a scheduled job is prevented from replaying stale work after restore;</li>
+<li>how externally visible side effects are reconciled after a partial failure.</li>
+</ul>
+<p>Prefer reversible changes, small batches and staged rollout. An agent can move quickly; recovery needs to be faster than the rate at which it can amplify a mistake.</p>
+
+<h2 id="verify">9. Verify outcomes independently</h2>
+<p>Do not equate a tool’s success line with the final business outcome. Verify at the system boundary that matters:</p>
+<ul>
+<li>run the actual build/test/lint/typecheck path after code changes;</li>
+<li>fetch the deployed URL instead of trusting a deploy command;</li>
+<li>check the remote repository after a push;</li>
+<li>separate “checkout page loaded” from “payment completed”;</li>
+<li>separate “notification sent” from “task succeeded.”</li>
+</ul>
+<p>Keep the evidence concise enough that another person can review it later.</p>
+
+<h2 id="baseline">10. A practical minimum baseline</h2>
+<p>If you need a short starting point, make these statements true:</p>
+<ul class="check">
+<li>I can list every agent/MCP/hook/automation surface that acts on this workspace.</li>
+<li>I know which of them can write locally or remotely.</li>
+<li>I know which credential powers every remote action.</li>
+<li>Production-admin credentials are not present in ordinary agent sessions unless explicitly required.</li>
+<li>Repository-local permission rules are reviewed rather than accumulated indefinitely.</li>
+<li>Risky execution has a real sandbox or disposable environment.</li>
+<li>Scheduled work has bounded retries, state and a stop condition.</li>
+<li>The repository has a tested build/verification path.</li>
+<li>I know how to restore a known-good state.</li>
+<li>I can verify externally visible results independently.</li>
+</ul>
+
+<div class="cta">
+<h2 style="margin-top:0">Apply this to a real repository</h2>
+<p>Start with the zero-signup browser audit. If you need more evidence, the public-repository report and 60-day watch remain read-only. Hands-on implementation is separate.</p>
+<a href="./free-audit.html">Free browser audit</a>
+<a href="./repo-audit.html">A$39 public-repo report</a>
+<a href="./watch.html">A$79 60-day watch</a>
+<a href="https://buy.stripe.com/9B600d9Mocei2RV8c104801">A$149 hands-on hardening</a>
+</div>
+
+<h2>Primary references</h2>
+<ul class="refs">
+<li><a href="https://code.claude.com/docs/en/security">Anthropic — Claude Code security</a></li>
+<li><a href="https://code.claude.com/docs/en/permissions">Anthropic — Configure permissions</a></li>
+<li><a href="https://code.claude.com/docs/en/mcp">Anthropic — Connect Claude Code to tools via MCP</a></li>
+<li><a href="https://code.claude.com/docs/en/settings">Anthropic — Settings files and precedence</a></li>
+</ul>
+<p class="fine">This guide is practical technical guidance, not a security certification, penetration test, legal opinion or compliance assessment. Product behavior can change; the reference links above are the canonical source for Claude Code-specific behavior.</p>
+</article></main></body></html>
