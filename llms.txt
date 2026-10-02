@@ -4,6 +4,8 @@
 
 ## Primary pages
 
+- Free GitHub Action guide: https://ossabellator.github.io/claude-code-mcp-hardening/github-action.html
+
 - Home: https://ossabellator.github.io/claude-code-mcp-hardening/
 - Free AI coding workspace hardening checklist: https://ossabellator.github.io/claude-code-mcp-hardening/checklist.html
 - How to audit a Claude Code / MCP repository without executing it: https://ossabellator.github.io/claude-code-mcp-hardening/claude-code-repo-audit.html
