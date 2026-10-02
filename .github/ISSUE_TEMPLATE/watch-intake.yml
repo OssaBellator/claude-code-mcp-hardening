@@ -1,0 +1,40 @@
+name: 60-day watch intake
+description: Start the delivery thread after purchasing the A$79 public-repository watch.
+title: "[60-day watch] "
+labels:
+  - watch-intake
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form only after purchasing the A$79 60-day public-repository watch. Payment is verified privately before the watch is activated.
+        Do not post passwords, API keys, private keys, recovery phrases, customer data, or other secrets.
+  - type: input
+    id: github_username
+    attributes:
+      label: GitHub username used at checkout
+      description: This is used only to match the paid Stripe intake.
+      placeholder: octocat
+    validations:
+      required: true
+  - type: input
+    id: repository_url
+    attributes:
+      label: Public GitHub repository URL
+      placeholder: https://github.com/owner/repository
+    validations:
+      required: true
+  - type: input
+    id: focus
+    attributes:
+      label: Main watch concern
+      description: Optional — for example MCP configuration, agent rules, CI authority, or credential hygiene.
+    validations:
+      required: false
+  - type: checkboxes
+    id: acknowledgement
+    attributes:
+      label: Safety acknowledgement
+      options:
+        - label: I understand the watch uses public repository evidence only and I will not post secrets in this issue.
+          required: true
