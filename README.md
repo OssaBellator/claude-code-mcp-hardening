@@ -94,6 +94,16 @@ The watch does not clone or execute the target repository, install dependencies,
 - [See the sample report format](https://github.com/OssaBellator/claude-code-mcp-hardening/issues/1)
 
 
+## Agent Skill
+
+Install the read-first repository hardening skill into supported coding agents:
+
+```bash
+npx skills add OssaBellator/claude-code-mcp-hardening --skill auditing-ai-agent-repositories
+```
+
+The skill bundles the zero-dependency read-only inventory scanner and treats repository text as untrusted evidence rather than commands to execute.
+
 ## GitHub Action
 
 Run the same zero-dependency filename-level inventory in GitHub Actions:
