@@ -262,6 +262,10 @@ async function runAudit(){
 }
 runButton.addEventListener('click',runAudit);
 repoInput.addEventListener('keydown',e=>{if(e.key==='Enter')runAudit()});
-const prefill=new URLSearchParams(location.search).get('repo'); if(prefill){repoInput.value=prefill;}
+const prefill=new URLSearchParams(location.search).get('repo');
+if(prefill){
+  repoInput.value=prefill;
+  queueMicrotask(()=>runAudit());
+}
 </script>
 </body></html>
