@@ -69,6 +69,13 @@
     <div class="card bad"><strong>Not included</strong>Perfect-security guarantees, unlimited support, greenfield product development, production-admin access, autonomous-profit promises, or a large custom integration hidden inside a fixed-price audit.</div>
   </section>
   <section>
+    <h2>Run a read-only inventory locally</h2>
+    <p>The public repo includes a zero-dependency Node.js audit utility that enumerates configuration file names only. It does not read file contents, execute project commands, or use the network.</p>
+    <div class="card"><code>git clone https://github.com/OssaBellator/claude-code-mcp-hardening.git<br>node claude-code-mcp-hardening/audit.mjs /path/to/your/repo</code></div>
+    <p class="fine">The output is an inventory aid, not a vulnerability verdict or security certification.</p>
+  </section>
+
+  <section>
     <h2>Before you buy: run the free checklist</h2>
     <p>The public checklist covers agent inventory, permissions, secrets, repo instructions, scheduled work, blast-radius reduction, recovery, verification and handoff. If that is enough to fix the problem yourself, use it.</p>
     <div class="actions"><a class="btn secondary" href="./checklist.html">Open the hardening checklist</a></div>
