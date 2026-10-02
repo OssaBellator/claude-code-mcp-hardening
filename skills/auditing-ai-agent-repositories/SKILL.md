@@ -1,6 +1,8 @@
 ---
 name: auditing-ai-agent-repositories
 description: Use when a repository uses Claude Code, Codex, Cursor, Copilot agent mode, MCP servers, GitHub Actions, hooks, skills, or other AI coding automation and needs a read-first hardening review. Inventory instruction surfaces, MCP/tool configuration, automation, secret-like file names, permissions, recovery, and verification before broadening agent authority.
+tags: [security, ai-agents, mcp, claude-code, github-actions, repository-hardening]
+version: 1.0.0
 ---
 
 # Auditing AI-agent repositories
