@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ossabellator.github.io/claude-code-mcp-hardening/
