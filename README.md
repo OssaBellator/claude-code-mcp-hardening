@@ -8,6 +8,10 @@ The goal is simple: keep the speed benefits of agentic coding while reducing fra
 
 **No-install option:** [Run the free browser audit](https://ossabellator.github.io/claude-code-mcp-hardening/free-audit.html) against any public GitHub repository. It uses bounded public GitHub evidence and does not execute target repository code.
 
+## Repository hardening guide
+
+[Read the evidence-based AI coding agent repository hardening guide](https://ossabellator.github.io/claude-code-mcp-hardening/hardening-guide.html), covering permissions, MCP scopes, hooks, GitHub Actions, credentials, verification, and recovery.
+
 ## Free self-audit
 
 Start with the [AI coding workspace hardening checklist](./CHECKLIST.md). It covers:
