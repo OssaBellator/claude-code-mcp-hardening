@@ -1,0 +1,9 @@
+name: AI Agent Repository Hardening Audit
+description: Read-only inventory of common Claude Code, Codex, Cursor, MCP and repository automation surfaces without executing repository code.
+author: OssaBellator
+branding:
+  icon: shield
+  color: gray-dark
+runs:
+  using: node20
+  main: action.mjs
