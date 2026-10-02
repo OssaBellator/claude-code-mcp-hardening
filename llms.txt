@@ -29,3 +29,8 @@ The public-repository audit is read-only and does not clone or execute target re
 - A$39 one-off report: https://ossabellator.github.io/claude-code-mcp-hardening/repo-audit.html
 - A$79 60-day watch: https://ossabellator.github.io/claude-code-mcp-hardening/watch.html
 - A$149 hands-on implementation: https://ossabellator.github.io/claude-code-mcp-hardening/
+
+
+## Claude Code + MCP hardening guide
+- https://ossabellator.github.io/claude-code-mcp-hardening/claude-code-mcp-security-guide.html
+- Practical 2026 guide grounded in current Claude Code permissions, security, settings and MCP documentation.
