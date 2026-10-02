@@ -18,3 +18,14 @@
 ## Scope
 
 The public-repository audit is read-only and does not clone or execute target repository code. It reports bounded public evidence and explicit limitations; it is not a penetration test, security certification, legal opinion or compliance assessment.
+
+
+## Interactive free audit
+- https://ossabellator.github.io/claude-code-mcp-hardening/free-audit.html
+- Zero-signup browser audit for one public GitHub repository.
+- Reads bounded public GitHub metadata and configuration evidence; does not clone or execute the target repository.
+
+## Paid public-repository options
+- A$39 one-off report: https://ossabellator.github.io/claude-code-mcp-hardening/repo-audit.html
+- A$79 60-day watch: https://ossabellator.github.io/claude-code-mcp-hardening/watch.html
+- A$149 hands-on implementation: https://ossabellator.github.io/claude-code-mcp-hardening/
