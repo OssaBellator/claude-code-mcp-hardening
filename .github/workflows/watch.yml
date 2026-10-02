@@ -1,0 +1,26 @@
+name: 60-day public repository watch
+
+on:
+  issues:
+    types: [labeled]
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    if: github.event_name != 'issues' || github.event.label.name == 'watch-active'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Run due watch reports
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node watch.mjs
