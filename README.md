@@ -14,6 +14,29 @@ The goal is simple: keep the speed benefits of agentic coding while reducing fra
 - **Boundary:** findings are review signals, not penetration-test results or vulnerability certification.
 - **Try it:** [run the free browser audit](https://ossabellator.github.io/claude-code-mcp-hardening/free-audit.html) or use the local scanner below.
 
+## How the workflow fits together
+
+```mermaid
+flowchart LR
+    A[Repository / workspace] --> B[Read-only inventory]
+    B --> C[Evidence + review prompts]
+    C --> D[Human checklist / audit]
+    D --> E[Bounded fixes]
+    E --> F[Verification + handoff]
+    B --> G[GitHub Action]
+    B --> H[Agent Skill]
+    B --> I[Browser audit]
+```
+
+### Reviewer path
+
+- Scanner entry point: [`audit.mjs`](./audit.mjs)
+- Shared audit logic: [`audit-lib.mjs`](./audit-lib.mjs)
+- Regression coverage: [`test-audit.mjs`](./test-audit.mjs)
+- CI self-audit: [`.github/workflows/self-audit.yml`](./.github/workflows/self-audit.yml)
+- Agent Skill: [`skills/auditing-ai-agent-repositories/SKILL.md`](./skills/auditing-ai-agent-repositories/SKILL.md)
+- Security boundary: [`SECURITY.md`](./SECURITY.md)
+
 **No-install option:** [Run the free browser audit](https://ossabellator.github.io/claude-code-mcp-hardening/free-audit.html) against any public GitHub repository. It uses bounded public GitHub evidence and does not execute target repository code.
 
 ## Repository hardening guide
