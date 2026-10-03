@@ -14,6 +14,12 @@ The goal is simple: keep the speed benefits of agentic coding while reducing fra
 - **Boundary:** findings are review signals, not penetration-test results or vulnerability certification.
 - **Try it:** [run the free browser audit](https://ossabellator.github.io/claude-code-mcp-hardening/free-audit.html) or use the local scanner below.
 
+## Live proof
+
+Captured from the repository's actual read-only self-audit command on 2026-10-03.
+
+![Actual self-audit output](./docs/assets/proof.svg)
+
 ## How the workflow fits together
 
 ```mermaid
