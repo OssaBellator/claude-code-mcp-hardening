@@ -17,15 +17,14 @@ The goal is simple: keep the speed benefits of agentic coding while reducing fra
 ## How the workflow fits together
 
 ```mermaid
-flowchart LR
-    A[Repository / workspace] --> B[Read-only inventory]
-    B --> C[Evidence + review prompts]
-    C --> D[Human checklist / audit]
-    D --> E[Bounded fixes]
-    E --> F[Verification + handoff]
-    B --> G[GitHub Action]
-    B --> H[Agent Skill]
-    B --> I[Browser audit]
+flowchart TD
+    A[Repository or workspace]
+    B[Read-only inventory]
+    C[Evidence and review]
+    D[Bounded fixes]
+    E[Verification and handoff]
+
+    A --> B --> C --> D --> E
 ```
 
 ### Reviewer path
