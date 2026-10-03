@@ -6,6 +6,14 @@ A practical self-audit checklist for developers using **Claude Code, Codex, Curs
 
 The goal is simple: keep the speed benefits of agentic coding while reducing fragile configuration, accidental over-permission, credential exposure, and recovery surprises.
 
+## At a glance
+
+- **Problem:** AI-assisted repositories accumulate MCP configs, agent instructions, hooks, CI authority and credential surfaces faster than teams can reason about them.
+- **Implemented:** zero-dependency read-only inventory, browser audit, GitHub Action, Agent Skill, evidence-based checklist and human-review workflow.
+- **Verification:** the repository self-audits in GitHub Actions; the scanner does not execute target code, install target dependencies or require target credentials.
+- **Boundary:** findings are review signals, not penetration-test results or vulnerability certification.
+- **Try it:** [run the free browser audit](https://ossabellator.github.io/claude-code-mcp-hardening/free-audit.html) or use the local scanner below.
+
 **No-install option:** [Run the free browser audit](https://ossabellator.github.io/claude-code-mcp-hardening/free-audit.html) against any public GitHub repository. It uses bounded public GitHub evidence and does not execute target repository code.
 
 ## Repository hardening guide
